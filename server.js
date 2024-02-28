@@ -1,11 +1,19 @@
 const dotenv = require('dotenv').config();
 const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}))
 const express = require('express');
-
-
 const app = express();
+const router = express.Router()
+const http = require('http');
+// const http = require('https').createServer(app);
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({extended: false}));
+const socketIo = require('socket.io');
+const server = http.createServer(app);
+const io = socketIo(server);
+const { chatRoute } = require('./src/Message/Route');
+
+
+
 const mongoose = require('mongoose');
 
 
@@ -14,9 +22,18 @@ const db = mongoose.connection;
 db.on('error', (error) => console.log(error));
 db.once('open', () => console.log("MongoDB connected"));
 
-const server = app.listen(3000, () => {
-    console.log('Server is running', server.address().port);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`)
 })
 
 
-app.use(express.static(__dirname));
+app.use(express.static(__dirname + '/chat-app'));
+
+io.on('connection', (socket) => {
+    chatRoute(socket, io);
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/chat-app/index.html')
+})
