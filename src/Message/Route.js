@@ -1,47 +1,37 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const app = express();
+const http = require('http');
+const socketIo = require('socket.io');
+const mongoose = require('mongoose');
 const MessageModel = require('./Model.js');
 
+//API Routes
 
-function chatRoute(socket, io) {
-    io.on('connection', (socket) => {
-        console.log('A user connected');
-    
-    
-        socket.on('join', (username) => {
-            socket.username = username;
-            
-            io.emit('chat message', { username: 'System', message: `${username} has joined the chat` });
-        
-            // Retrieve previous messages from MongoDB and send to the connecting user
-            MessageModel.find({})
-                .then((messages) => {
-                    socket.emit('load messages', messages);
-                })
-                .catch((err) => {
-                    console.error('Error retrieving messages from MongoDB:', err);
-                });
-        });
-    
-        socket.on('chat message', async (msg) => {
-        const chatMessage = new MessageModel({ username: socket.username, message: msg });
-        
-        try {
-            await chatMessage.save();
-            io.emit('chat message', { username: socket.username, message: msg, timestamp: chatMessage.timestamp });
-        } catch (err) {
-            console.error('Error saving message to MongoDB:', err.message);
-        }
-    });
-    
-    
-        socket.on('disconnect', () => {
-            if (socket.username) {
-                io.emit('chat message', { username: 'System', message: `${socket.username} has left the chat` });
-            }
-            console.log('User disconnected');
-        });
-    });
-}
+router.get('/messages', async(req, res) => {
+    try{
+        const messages = await MessageModel.find({});
+        return res.status(200).json(messages);
+    }catch(err){
+        console.error('Error retrieving messages from Database', err.message);
+        return res.status(500).json({ error: 'Internal server error'})
+    }
+});
 
-module.exports = { chatRoute };
+router.post('/messages', async(req, res) => {
+    const { username, message } = req.body;
+    if(!username || !message){
+        return res.status(400).json({ error: 'Username and message are required'});
+    }
+
+    const chatMessage = new MessageModel({username, message});
+
+    try{
+        await chatMessage.save();
+        return res.status(201).json({ success: true, message: 'Message successfully sent'});
+    }catch(err){
+        console.error('Error sending message to Database', err.message);
+        return res.status(500).json({ error: 'Internal server error'});
+    }
+});
+
+module.exports = MessageRoute;
