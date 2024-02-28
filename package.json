@@ -1,0 +1,19 @@
+{
+  "name": "rt-chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoelZen/chatRT.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoelZen/chatRT/issues"
+  },
+  "homepage": "https://github.com/JoelZen/chatRT#readme"
+}
