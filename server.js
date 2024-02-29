@@ -11,7 +11,7 @@ const socketIo = require('socket.io');
 const server = http.createServer(app);
 const io = socketIo(server);
 const chatController = require('./src/Message/Controller');
-const apiRoute = require('./src/Message/Controller');
+const MessageRoute = require('./src/Message/Route');
 
 
 
@@ -31,7 +31,7 @@ server.listen(PORT, () => {
 app.use(express.json());
 app.use(express.static(__dirname + '/chat-app'));
 
-app.use('/api', apiRoute);
+app.use('/api', MessageRoute);
 
 io.on('connection', (socket) => {
     chatController(socket, io);

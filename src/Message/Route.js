@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const router = express.Router()
 const http = require('http');
 const socketIo = require('socket.io');
 const mongoose = require('mongoose');
@@ -9,18 +10,13 @@ const MessageModel = require('./Model.js');
 
 router.get('/messages', async (req, res) => {
     try {
-        // MessageModel.find().then(data =>{
-        //     res.send(data);
-        // });
-
-        MessageModel.find().then(data);        
+        const data = await MessageModel.find({});
+        res.send(data);
     } catch (err) {
         console.error('Error retrieving messages from Database', err.message);
         res.status(500).send('Internal Server Error');
     }
 });
-
-
 
 router.post('/messages', async(req, res) => {
     const { username, message } = req.body;
@@ -39,4 +35,4 @@ router.post('/messages', async(req, res) => {
     }
 });
 
-module.exports = MessageRoute;
+module.exports = router;
