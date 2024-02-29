@@ -7,15 +7,20 @@ const MessageModel = require('./Model.js');
 
 //API Routes
 
-router.get('/messages', async(req, res) => {
-    try{
-        const messages = await MessageModel.find({});
-        return res.status(200).json(messages);
-    }catch(err){
+router.get('/messages', async (req, res) => {
+    try {
+        // MessageModel.find().then(data =>{
+        //     res.send(data);
+        // });
+
+        MessageModel.find().then(data);        
+    } catch (err) {
         console.error('Error retrieving messages from Database', err.message);
-        return res.status(500).json({ error: 'Internal server error'})
+        res.status(500).send('Internal Server Error');
     }
 });
+
+
 
 router.post('/messages', async(req, res) => {
     const { username, message } = req.body;

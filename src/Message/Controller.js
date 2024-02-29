@@ -6,6 +6,8 @@ const MessageModel = require('./Model.js');
 function chatController(socket, io) {
     io.on('connection', (socket) => {
         console.log('A user connected');
+        socket.removeAllListeners('connection');
+        socket.removeAllListeners();
     
     
         socket.on('join', (username) => {
